@@ -20,7 +20,6 @@ def cargar_csv(nombre_archivo):
             paises.append(pais)
     return paises
         
-
 def buscar_pais(paises, nombre):
     encontrado=False
     for pais in paises:
@@ -34,6 +33,7 @@ def buscar_pais(paises, nombre):
         print("Error, el pais no ha sido ingresado.")
         
 def agregar_pais(paises):
+
     
     nombre=input("Ingresa el nombre del pais: ").strip().title()
     while not nombre.replace(" ","").isalpha():
@@ -73,6 +73,53 @@ def agregar_pais(paises):
     with open("paises.csv","a",encoding="utf-8") as archivo:
         archivo.write(f"\n{nombre},{poblacion},{superficie},{continente}\n")
 
+def actualizar_pais(paises,nombre):
+
+    encontrado=False
+
+    for pais in paises:
+        if pais["NombreDelPais"]==nombre:
+            try:
+                nuevo_pob=int(input("Nueva poblacion: "))
+                nuevo_sup=int(input("Nueva Superficie: "))
+                if nuevo_pob <=0 or nuevo_sup<=0:
+                    print("Error, el numero debe ser mayor a 0.")
+                    return
+            except ValueError:
+                print("Error, debe ingresar numeros unicamente.")
+                return
+            pais["Poblacion"]=nuevo_pob
+            pais["Superficie"]=nuevo_sup
+                
+            encontrado=True
+            break
+    if not encontrado:
+            print("Pais no encontrado.")
+            return
+
+    with open("paises.csv","w", encoding="utf-8") as archivo:
+        archivo.write("NombreDelPais, Poblacion, Superficie, Continente\n")
+
+        for p in paises:
+            archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
+
+def eliminar_pais(paises, nombre):
+    encontrado=False
+
+    for pais in paises:
+        if pais["NombreDelPais"] == nombre:
+            paises.remove(pais)
+            encontrado=True
+            break
+    if not encontrado:
+        print("Pais no encontrado.")
+        return
+    with open("paises.csv","w",encoding="utf-8") as archivo:
+        archivo.write("NombreDelPais,Poblacion,Superficie,Continente\n")
+
+        for p in paises:
+            archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
+    print("Pais eliminado correctamente.")        
 
 #Principal
 paises = cargar_csv("paises.csv")

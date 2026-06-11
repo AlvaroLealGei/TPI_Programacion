@@ -19,6 +19,13 @@ def cargar_csv(nombre_archivo):
             }
             paises.append(pais)
     return paises
+
+def mostrar_paises(paises):
+    if len(paises)==0:
+        print("No se han cargado paises.")
+        return
+    for p in paises:
+        print(f"Nombre: {p['NombreDelPais']} - Poblacion: {p['Poblacion']} - Superficie: {p['Superficie']} - Continente: {p['Continente']}")
         
 def buscar_pais(paises, nombre):
     encontrado=False
@@ -123,4 +130,5 @@ def eliminar_pais(paises, nombre):
 
 #Principal
 paises = cargar_csv("paises.csv")
-
+#n=input("Ingrese una opcion: ")
+mostrar_paises(paises)

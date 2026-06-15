@@ -1,6 +1,6 @@
 import csv
 file_csv='paises.csv'
-def mostrar_menu():
+def mostrar_menu(paises):
     while True:
         print("====== Menu =====")
         print("1. Agregar Pais")
@@ -23,10 +23,10 @@ def mostrar_menu():
                 buscar_pais(paises)
             case 3:
                 mostrar_paises(paises)
-            #case 4:
-                #actualizar_pais(paises)
-            #case 5:
-                #eliminar_pais(paises)
+            case 4:
+                actualizar_pais(paises)
+            case 5:
+                eliminar_pais(paises)
             case 6:
                 print("Saliendo...")
                 break
@@ -42,6 +42,8 @@ def cargar_csv(nombre_archivo):
         encabezado=next(lector)
 
         for linea in lector:
+            if len(linea)!=4:
+                continue
             nombre, poblacion, superficie, continente = linea
 
             pais={
@@ -53,7 +55,9 @@ def cargar_csv(nombre_archivo):
             paises.append(pais)
     return paises
         
-def buscar_pais(paises, nombre):
+def buscar_pais(paises):
+    print("======== Buscar Pais ========")
+    nombre=input("Ingrese el nombre: ").strip().title()
     encontrado=False
     for pais in paises:
         if pais["NombreDelPais"]==nombre:
@@ -76,19 +80,30 @@ def agregar_pais(paises):
         if pais["NombreDelPais"]==nombre:
             print(f"El pais ya existe")
             return
+    
+    while True:
         
-    try:
-        poblacion=int(input("Ingresa la poblacion: "))
-        superficie=int(input("Ingresa la superficie: "))
-    except ValueError:
-        print("Error, debías ingresar un numero.")
-        return
+        try:
+            poblacion=int(input("Ingresa la poblacion: "))
+            if poblacion<=0:
+                print("Error, debe ser mayor a 0.")
+                continue
+            break
+        except ValueError:
+            print("Error, debías ingresar un numero.")
 
-    if poblacion<=0 or superficie<=0:
-        print("Error, valores invalidos.")
-        return
+    while True:
+        try:
+            superficie=int(input("Ingresa la superficie: "))
+            if superficie<=0:
+                print("Error, valores invalidos.")
+                continue
+            break
+        except ValueError:
+            print("Error, debe ingresar un numero.")
 
-    continente=input("Ingrese el continente en el que se encuentra: ")      
+                
+    continente=input("Ingrese el continente en el que se encuentra: ").strip().title()    
 
     while not continente.replace(" ","").isalpha():
         print("Error. Solo se permiten letras.")
@@ -102,7 +117,7 @@ def agregar_pais(paises):
         }
     paises.append(pais)
 
-    with open("paises.csv","a",encoding="utf-8") as archivo:
+    with open(file_csv,"a",encoding="utf-8") as archivo:
         archivo.write(f"\n{nombre},{poblacion},{superficie},{continente}\n")
 
 def mostrar_paises(paises):
@@ -113,10 +128,67 @@ def mostrar_paises(paises):
     for pais in paises:
         print(f"Nombre: {pais['NombreDelPais']} - Poblacion: {pais['Poblacion']}  - Superficie: {pais['Superficie']}  - Continente: {pais['Continente']}")
         
-#def actualizar_pais(paises):
-    
+def actualizar_pais(paises):
+    print("======== Actualizar Pais ========")
 
+    try:
+        nombre = input("Ingerse el nombre: ").strip().title()
+        encontrado = False
 
+        for pais in paises:
+            if pais['NombreDelPais'] == nombre:
+                encontrado = True
+                print("Pais encontrado. Deje en blanco si no desea modificar un campo.")
+
+                nuevo_nombre = input("Nuevo nombre: ").strip().title()
+                nueva_poblacion = input("Nueva Poblacion: ").strip()
+                nueva_superficie = input("Nueva Superficie: ").strip()
+                nuevo_continente = input("Nuevo Continente: ").strip().title()
+
+                if nuevo_nombre != "":
+                    pais['NombreDelPais'] = nuevo_nombre
+
+                if nueva_poblacion != "":
+                    pais['Poblacion'] = int(nueva_poblacion)
+
+                if nueva_superficie != "":
+                    pais['Superficie'] = int(nueva_superficie)
+
+                if nuevo_continente != "":
+                    pais['Continente'] = nuevo_continente
+
+                print("Pais actualizado correctamente.")
+                break
+
+        if not encontrado:
+            print("Error, el pais no existe.")
+            return
+
+        with open(file_csv, "w", encoding="utf-8") as archivo:
+            archivo.write("Nombre,Poblacion,Superficie,Continente\n")
+            for p in paises:
+                archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
+
+    except Exception as e:
+        print(f"Error inesperado: {type(e).__name__}")
+
+def eliminar_pais(paises):
+    print("======== Eliminar Pais ========")
+    nombre=input("Ingrese el nombre del pais: ").strip().title()
+    encontrado=False
+    for pais in paises:
+        if pais['NombreDelPais']== nombre:
+            paises.remove(pais)
+            encontrado=True
+            print("Pais eliminado correctamente.")
+            break
+    if not encontrado:
+        print("Error, el pais no existe.")
+        return
+    with open(file_csv,"w",encoding="utf-8") as archivo:
+        archivo.write("NombreDelPais,Poblacion,Superficie,Continente\n")
+        for p in paises:
+            archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
 
 def filtrar_continente():
     # Maneja errores de tipo de dato no válido
@@ -626,7 +698,7 @@ def limpieza_tildes(texto):
 #Principal
 paises = cargar_csv("paises.csv")
 
-mostrar_menu
+mostrar_menu(paises)
 
 
 

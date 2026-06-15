@@ -661,7 +661,7 @@ def estadisticas():
             # Calcula la suma total de la superficie de todos los países
             s_promedio = promedio_superficie(filas)
             # Muestra la suma total de superficie
-            print(f"El promedio de superficie de los paises registrados es de: {s_promedio} personas")
+            print(f"El promedio de superficie de los paises registrados es de: {s_promedio} KM")
             # Muestra separador visual
             print("------------------------------------------------------------------------------------------------------------")
             # Muestra el encabezado de la sección de países por continente

@@ -1,6 +1,254 @@
 import csv
+file_csv='paises.csv'
+def mostrar_menu(paises):
+    while True:
+        print("\n====== SISTEMA DE PAISES ======")
+        print("1. Gestión de Países (ABM)")
+        print("2. Reportes")
+        print("3. Salir")
+        
+        try:
+            opcion=int(input("Ingrese una opción: "))
+        except ValueError:
+            print("Error, debe ingresar un número.")
+            continue
+        match opcion:
+            case 1:
+                menu_ABM(paises)
+            case 2:
+                menu_reportes(paises)
+            case 3:
+                print("Saliendo ...")
+                break
+            case _:
+                print("Opción inválida.")
+            
 
-ARCHIVO = 'paises.csv'
+def menu_ABM():
+    while True:
+        print("======== GESTIÓN DE PAISES ========")
+        print("1. Agregar Pais")
+        print("2. Buscar Pais")
+        print("3. Mostrar Paises")
+        print("4. Actualizar Paises")
+        print("5. Eliminar Pais")
+        print("6. Volver")
+        
+        try:
+            opcion=int(input("Ingrese una opcion: "))
+        except ValueError:
+            print("Error, debe ingersar un número.")
+            continue
+        match opcion:
+            case 1:
+                agregar_pais(paises)
+            case 2:
+                buscar_pais(paises)
+            case 3:
+                mostrar_paises(paises)
+            case 4:
+                actualizar_pais(paises)
+            case 5:
+                eliminar_pais(paises)
+            case 6:
+                break
+            case _:
+                print("Opción inválida.")
+
+def menu_reportes(paises):
+    while True:
+        print("\n------ REPORTES ------")
+        print("1. Filtrar por continente")
+        print("2. Filtrar por población")
+        print("3. Filtrar por superficie")
+        print("4. Ordenar por nombre")
+        print("5. Ordenar por superficie")
+        print("6. Ordenar por población")
+        print("7. Estadísticas")
+        print("8. Volver")
+        
+        try:
+            opcion=int(input("Ingersa una opción: "))
+        except ValueError:
+            print("Error, debe ingresar un número.")
+            continue
+        
+        match opcion:
+            case 1:
+                filtrar_continente()
+            case 2:
+                filtrar_poblacion()
+            case 3:
+                filtrar_superficie()
+            case 4:
+                ordenar_nombre()
+            case 5:
+                ordenar_superficie()
+            case 6:
+                ordenar_poblacion()
+            case 7:
+                estadisticas()
+            case 8:
+                break
+            case _:
+                print("Opción inválida.")
+
+def cargar_csv(nombre_archivo):
+    paises=[]
+
+    with open(nombre_archivo,"r", encoding="utf-8") as archivo:
+        lector=csv.reader(archivo, delimiter=",")
+
+        encabezado=next(lector)
+
+        for linea in lector:
+            if len(linea)!=4:
+                continue
+            nombre, poblacion, superficie, continente = linea
+
+            pais={
+                "NombreDelPais": nombre,
+                "Poblacion": int(poblacion),
+                "Superficie": int(superficie),
+                "Continente": continente
+            }
+            paises.append(pais)
+    return paises
+        
+def buscar_pais(paises):
+    print("======== Buscar Pais ========")
+    nombre=input("Ingrese el nombre: ").strip().title()
+    encontrado=False
+    for pais in paises:
+        if pais["NombreDelPais"]==nombre:
+            print(f"Pais encontrado:")
+            print(f"Nombre: {pais['NombreDelPais']} - Poblacion: {pais['Poblacion']} - Superficie: {pais['Superficie']} - Continente: {pais['Continente']}")
+            encontrado=True
+            break
+
+    if not encontrado:
+        print("Error, el pais no ha sido ingresado.")
+        
+def agregar_pais(paises):
+    
+    nombre=input("Ingresa el nombre del pais: ").strip().title()
+    while not nombre.replace(" ","").isalpha():
+        print("Error. Solo se permiten letras")
+        nombre=input("Ingresa el nombre del pais: ").strip().title()
+
+    for pais in paises:
+        if pais["NombreDelPais"]==nombre:
+            print(f"El pais ya existe")
+            return
+    
+    while True:
+        
+        try:
+            poblacion=int(input("Ingresa la poblacion: "))
+            if poblacion<=0:
+                print("Error, debe ser mayor a 0.")
+                continue
+            break
+        except ValueError:
+            print("Error, debías ingresar un numero.")
+
+    while True:
+        try:
+            superficie=int(input("Ingresa la superficie: "))
+            if superficie<=0:
+                print("Error, valores invalidos.")
+                continue
+            break
+        except ValueError:
+            print("Error, debe ingresar un numero.")
+
+                
+    continente=input("Ingrese el continente en el que se encuentra: ").strip().title()    
+
+    while not continente.replace(" ","").isalpha():
+        print("Error. Solo se permiten letras.")
+        continente=input("Ingrese el continente en el que se encuentra: ")      
+            
+    pais={
+            "NombreDelPais":nombre,
+            "Poblacion": poblacion,
+            "Superficie": superficie,
+            "Continente": continente
+        }
+    paises.append(pais)
+
+    with open(file_csv,"a",encoding="utf-8") as archivo:
+        archivo.write(f"\n{nombre},{poblacion},{superficie},{continente}\n")
+
+def mostrar_paises(paises):
+    if not paises:
+        print("No hay paises cargados")
+        return
+    print("======== Lista de Paises ========")
+    for pais in paises:
+        print(f"Nombre: {pais['NombreDelPais']} - Poblacion: {pais['Poblacion']}  - Superficie: {pais['Superficie']}  - Continente: {pais['Continente']}")
+        
+def actualizar_pais(paises):
+    print("======== Actualizar Pais ========")
+
+    try:
+        nombre = input("Ingerse el nombre: ").strip().title()
+        encontrado = False
+
+        for pais in paises:
+            if pais['NombreDelPais'] == nombre:
+                encontrado = True
+                print("Pais encontrado. Deje en blanco si no desea modificar un campo.")
+
+                nuevo_nombre = input("Nuevo nombre: ").strip().title()
+                nueva_poblacion = input("Nueva Poblacion: ").strip()
+                nueva_superficie = input("Nueva Superficie: ").strip()
+                nuevo_continente = input("Nuevo Continente: ").strip().title()
+
+                if nuevo_nombre != "":
+                    pais['NombreDelPais'] = nuevo_nombre
+
+                if nueva_poblacion != "":
+                    pais['Poblacion'] = int(nueva_poblacion)
+
+                if nueva_superficie != "":
+                    pais['Superficie'] = int(nueva_superficie)
+
+                if nuevo_continente != "":
+                    pais['Continente'] = nuevo_continente
+
+                print("Pais actualizado correctamente.")
+                break
+
+        if not encontrado:
+            print("Error, el pais no existe.")
+            return
+
+        with open(file_csv, "w", encoding="utf-8") as archivo:
+            archivo.write("Nombre,Poblacion,Superficie,Continente\n")
+            for p in paises:
+                archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
+
+    except Exception as e:
+        print(f"Error inesperado: {type(e).__name__}")
+
+def eliminar_pais(paises):
+    print("======== Eliminar Pais ========")
+    nombre=input("Ingrese el nombre del pais: ").strip().title()
+    encontrado=False
+    for pais in paises:
+        if pais['NombreDelPais']== nombre:
+            paises.remove(pais)
+            encontrado=True
+            print("Pais eliminado correctamente.")
+            break
+    if not encontrado:
+        print("Error, el pais no existe.")
+        return
+    with open(file_csv,"w",encoding="utf-8") as archivo:
+        archivo.write("NombreDelPais,Poblacion,Superficie,Continente\n")
+        for p in paises:
+            archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
 
 def filtrar_continente():
     # Maneja errores de tipo de dato no válido
@@ -26,7 +274,7 @@ def filtrar_continente():
         # Restaura el continente con espacios originales para comparar con el CSV
         continente = aux
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Bandera para saber si se encontró el continente en los datos
             existencia = False
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
@@ -60,7 +308,7 @@ def filtrar_poblacion():
     # Maneja errores de tipo de dato no válido y otros errores inesperados
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Define una función interna para obtener la población máxima del archivo
             def obtener_max(archivo):
                 # Inicializa el máximo en cero
@@ -163,7 +411,7 @@ def filtrar_superficie():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Obtiene el diccionario completo de la fila con la mayor superficie
@@ -260,7 +508,7 @@ def ordenar_nombre():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             archivo = list(csv.DictReader(archivo))
             # Inicializa la lista donde se almacenarán los nombres de los países
@@ -305,7 +553,7 @@ def ordenar_superficie():
             # Lee nuevamente la entrada del usuario
             eleccion = input().strip().lower()
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Si el usuario eligió ordenar de menor a mayor
@@ -328,7 +576,7 @@ def ordenar_poblacion():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Ordena las filas por población de menor a mayor
@@ -345,7 +593,7 @@ def estadisticas():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Define una función interna para sumar la población total de todos los países
             def promedio_poblacion(lista):
                 # Inicializa el acumulador en cero
@@ -507,4 +755,10 @@ def limpieza_tildes(texto):
                     return texto
                 
 
-filtrar_superficie()
+#Principal
+paises = cargar_csv("paises.csv")
+
+mostrar_menu(paises)
+
+
+

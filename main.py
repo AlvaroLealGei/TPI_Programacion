@@ -1,4 +1,5 @@
 import csv
+file_csv='paises.csv'
 def mostrar_menu():
     while True:
         print("====== Menu =====")
@@ -22,10 +23,10 @@ def mostrar_menu():
                 buscar_pais(paises)
             case 3:
                 mostrar_paises(paises)
-            case 4:
-                actualizar_pais(paises)
-            case 5:
-                eliminar_pais(paises)
+            #case 4:
+                #actualizar_pais(paises)
+            #case 5:
+                #eliminar_pais(paises)
             case 6:
                 print("Saliendo...")
                 break
@@ -52,7 +53,6 @@ def cargar_csv(nombre_archivo):
             paises.append(pais)
     return paises
         
-
 def buscar_pais(paises, nombre):
     encontrado=False
     for pais in paises:
@@ -105,6 +105,17 @@ def agregar_pais(paises):
     with open("paises.csv","a",encoding="utf-8") as archivo:
         archivo.write(f"\n{nombre},{poblacion},{superficie},{continente}\n")
 
+def mostrar_paises(paises):
+    if not paises:
+        print("No hay paises cargados")
+        return
+    print("======== Lista de Paises ========")
+    for pais in paises:
+        print(f"Nombre: {pais['NombreDelPais']} - Poblacion: {pais['Poblacion']}  - Superficie: {pais['Superficie']}  - Continente: {pais['Continente']}")
+        
+#def actualizar_pais(paises):
+    
+
 
 
 def filtrar_continente():
@@ -131,7 +142,7 @@ def filtrar_continente():
         # Restaura el continente con espacios originales para comparar con el CSV
         continente = aux
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Bandera para saber si se encontró el continente en los datos
             existencia = False
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
@@ -165,7 +176,7 @@ def filtrar_poblacion():
     # Maneja errores de tipo de dato no válido y otros errores inesperados
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Define una función interna para obtener la población máxima del archivo
             def obtener_max(archivo):
                 # Inicializa el máximo en cero
@@ -268,7 +279,7 @@ def filtrar_superficie():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Obtiene el diccionario completo de la fila con la mayor superficie
@@ -365,7 +376,7 @@ def ordenar_nombre():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             archivo = list(csv.DictReader(archivo))
             # Inicializa la lista donde se almacenarán los nombres de los países
@@ -410,7 +421,7 @@ def ordenar_superficie():
             # Lee nuevamente la entrada del usuario
             eleccion = input().strip().lower()
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Si el usuario eligió ordenar de menor a mayor
@@ -433,7 +444,7 @@ def ordenar_poblacion():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Lee todas las filas del CSV y las convierte en una lista de diccionarios
             filas = list(csv.DictReader(archivo))
             # Ordena las filas por población de menor a mayor
@@ -450,7 +461,7 @@ def estadisticas():
     # Maneja cualquier error inesperado
     try:
         # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(ARCHIVO, 'r', encoding='utf-8') as archivo:
+        with open(file_csv, 'r', encoding='utf-8') as archivo:
             # Define una función interna para sumar la población total de todos los países
             def promedio_poblacion(lista):
                 # Inicializa el acumulador en cero
@@ -612,12 +623,10 @@ def limpieza_tildes(texto):
                     return texto
                 
 
-filtrar_superficie()
 #Principal
 paises = cargar_csv("paises.csv")
 
-
-
+mostrar_menu
 
 
 

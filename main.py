@@ -2,24 +2,47 @@ import csv
 file_csv='paises.csv'
 def mostrar_menu(paises):
     while True:
-        print("====== Menu =====")
+        print("\n====== SISTEMA DE PAISES ======")
+        print("1. Gestión de Países (ABM)")
+        print("2. Reportes")
+        print("3. Salir")
+        
+        try:
+            opcion=int(input("Ingrese una opción: "))
+        except ValueError:
+            print("Error, debe ingresar un número.")
+            continue
+        match opcion:
+            case 1:
+                menu_ABM(paises)
+            case 2:
+                menu_reportes(paises)
+            case 3:
+                print("Saliendo ...")
+                break
+            case _:
+                print("Opción inválida.")
+            
+
+def menu_ABM():
+    while True:
+        print("======== GESTIÓN DE PAISES ========")
         print("1. Agregar Pais")
         print("2. Buscar Pais")
         print("3. Mostrar Paises")
         print("4. Actualizar Paises")
         print("5. Eliminar Pais")
-        print("6. Salir")
-
+        print("6. Volver")
+        
         try:
             opcion=int(input("Ingrese una opcion: "))
         except ValueError:
-            print("Error, debe ingresar un numero.")
+            print("Error, debe ingersar un número.")
             continue
         match opcion:
             case 1:
                 agregar_pais(paises)
             case 2:
-               
                 buscar_pais(paises)
             case 3:
                 mostrar_paises(paises)
@@ -28,7 +51,44 @@ def mostrar_menu(paises):
             case 5:
                 eliminar_pais(paises)
             case 6:
-                print("Saliendo...")
+                break
+            case _:
+                print("Opción inválida.")
+
+def menu_reportes(paises):
+    while True:
+        print("\n------ REPORTES ------")
+        print("1. Filtrar por continente")
+        print("2. Filtrar por población")
+        print("3. Filtrar por superficie")
+        print("4. Ordenar por nombre")
+        print("5. Ordenar por superficie")
+        print("6. Ordenar por población")
+        print("7. Estadísticas")
+        print("8. Volver")
+        
+        try:
+            opcion=int(input("Ingersa una opción: "))
+        except ValueError:
+            print("Error, debe ingresar un número.")
+            continue
+        
+        match opcion:
+            case 1:
+                filtrar_continente()
+            case 2:
+                filtrar_poblacion()
+            case 3:
+                filtrar_superficie()
+            case 4:
+                ordenar_nombre()
+            case 5:
+                ordenar_superficie()
+            case 6:
+                ordenar_poblacion()
+            case 7:
+                estadisticas()
+            case 8:
                 break
             case _:
                 print("Opción inválida.")

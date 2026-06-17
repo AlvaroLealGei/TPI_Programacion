@@ -249,6 +249,7 @@ def eliminar_pais(paises):
         for p in paises:
             archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
 
+
 def filtrar_continente(paises):
     # Maneja errores de tipo de dato no válido
     try:
@@ -500,10 +501,8 @@ def ordenar_nombre(paises):
         nombres = []
         # Recorre cada elemento de paises
         for elemento in paises:
-            print(elemento['NombreDelPais'])
             # Elimina las tildes del nombre para poder ordenarlo correctamente
             nombre = limpieza_tildes(elemento['NombreDelPais'])
-            print(nombre)
             # Agrega el nombre sin tildes a la lista
             nombres.append(nombre)
         # Ordena la lista de nombres alfabéticamente
@@ -651,15 +650,15 @@ def limpieza_tildes(texto):
             # Obtiene el valor decimal del carácter 'a'
             a = ord('a')
             # Obtiene el valor decimal del carácter 'e'
-            b = ord('e')
+            e = ord('e')
             # Obtiene el valor decimal del carácter 'i'
-            c = ord('i')
+            i = ord('i')
             # Obtiene el valor decimal del carácter 'o'
-            d = ord('o')
+            o = ord('o')
             # Obtiene el valor decimal del carácter 'u'
-            e = ord('u')
+            u = ord('u')
             # Crea una lista con los valores decimales de las vocales sin tilde
-            UNICODE_VOCALES = [a, b, c, d, e]
+            UNICODE_VOCALES = [a, e, i, o, u]
             # Inicializa la lista donde se almacenarán las letras del texto
             letras = []
             # Inicializa la variable que guardará la letra con tilde detectada
@@ -682,7 +681,6 @@ def limpieza_tildes(texto):
             unicode_tilde = ord(letra_tilde)
             # Recorre cada vocal sin tilde para identificar cuál es la versión sin tilde
             for unicode in UNICODE_VOCALES:
-                print(unicode)
                 # Suma el valor Unicode de la vocal y el de la letra con tilde
                 suma = unicode + unicode_tilde
                 # Verifica si la letra con tilde corresponde a la 'á'

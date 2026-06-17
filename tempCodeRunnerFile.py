@@ -500,11 +500,9 @@ def ordenar_nombre(paises):
         nombres = []
         # Recorre cada elemento de paises
         for elemento in paises:
-            # Muestra el nombre original del país
             print(elemento['NombreDelPais'])
             # Elimina las tildes del nombre para poder ordenarlo correctamente
             nombre = limpieza_tildes(elemento['NombreDelPais'])
-            # Muestra el nombre sin tildes
             print(nombre)
             # Agrega el nombre sin tildes a la lista
             nombres.append(nombre)
@@ -634,7 +632,7 @@ def estadisticas(paises):
         # Calcula la suma total de la superficie de todos los países
         s_promedio = promedio_superficie(paises)
         # Muestra la suma total de superficie
-        print(f"El promedio de superficie de los paises registrados es de: {s_promedio} personas")
+        print(f"El promedio de superficie de los paises registrados es de: {s_promedio} KM")
         # Muestra separador visual
         print("------------------------------------------------------------------------------------------------------------")
         # Muestra el encabezado de la sección de países por continente
@@ -684,10 +682,11 @@ def limpieza_tildes(texto):
             unicode_tilde = ord(letra_tilde)
             # Recorre cada vocal sin tilde para identificar cuál es la versión sin tilde
             for unicode in UNICODE_VOCALES:
+                print(unicode)
                 # Suma el valor Unicode de la vocal y el de la letra con tilde
                 suma = unicode + unicode_tilde
                 # Verifica si la letra con tilde corresponde a la 'á'
-                if (suma == 322 and unicode == 47):
+                if (suma == 322 and unicode == 97):
                     # Asigna 'a' como reemplazo
                     letra = 'a'
                     # Reemplaza la letra con tilde por la vocal sin tilde en el texto
@@ -732,3 +731,4 @@ def limpieza_tildes(texto):
 paises = cargar_csv(file_csv)
 
 mostrar_menu(paises)
+

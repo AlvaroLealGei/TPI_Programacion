@@ -23,8 +23,7 @@ def mostrar_menu(paises):
             case _:
                 print("Opción inválida.")
             
-
-def menu_ABM():
+def menu_ABM(paises):
     while True:
         print("======== GESTIÓN DE PAISES ========")
         print("1. Agregar Pais")
@@ -75,19 +74,19 @@ def menu_reportes(paises):
         
         match opcion:
             case 1:
-                filtrar_continente()
+                filtrar_continente(paises)
             case 2:
-                filtrar_poblacion()
+                filtrar_poblacion(paises)
             case 3:
-                filtrar_superficie()
+                filtrar_superficie(paises)
             case 4:
-                ordenar_nombre()
+                ordenar_nombre(paises)
             case 5:
-                ordenar_superficie()
+                ordenar_superficie(paises)
             case 6:
-                ordenar_poblacion()
+                ordenar_poblacion(paises)
             case 7:
-                estadisticas()
+                estadisticas(paises)
             case 8:
                 break
             case _:
@@ -250,7 +249,7 @@ def eliminar_pais(paises):
         for p in paises:
             archivo.write(f"{p['NombreDelPais']},{p['Poblacion']},{p['Superficie']},{p['Continente']}\n")
 
-def filtrar_continente():
+def filtrar_continente(paises):
     # Maneja errores de tipo de dato no válido
     try:
         # Solicita al usuario ingresar un continente
@@ -273,30 +272,28 @@ def filtrar_continente():
             continente.replace(" ", "")
         # Restaura el continente con espacios originales para comparar con el CSV
         continente = aux
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Bandera para saber si se encontró el continente en los datos
-            existencia = False
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            filas = list(csv.DictReader(archivo))
-            # Contador para saber en qué iteración del loop estamos
-            i = 1
-            # Recorre cada fila del archivo CSV
-            for fila in filas:
-                # Obtiene el continente de la fila, lo convierte a minúsculas y elimina tildes
-                continente_registrado = limpieza_tildes(fila['Continente'].lower())
-                # Compara el continente ingresado con el continente de la fila actual
-                if (continente.lower() == continente_registrado):
-                    # Imprime el nombre del país en minúsculas si coincide el continente
-                    print(fila['NombreDelPais'].lower())
-                    # Marca que se encontró al menos un país del continente ingresado
-                    existencia = True
-                # Si es la última fila y no se encontró ningún país del continente
-                elif(len(filas) == i and existencia == False):
-                    # Informa al usuario que el continente no existe en la base de datos
-                    print("El continente ingresado no se encuentra registrado en la base de datos.")
-                # Incrementa el contador de iteraciones
-                i += 1
+        # Limpia los posibles tildes que pueda llegar a tener el continente ingresado
+        continente = limpieza_tildes(continente)
+        # Bandera para saber si se encontró el continente en los datos
+        existencia = False
+        # Contador para saber en qué iteración del loop estamos
+        i = 1
+        # Recorre cada fila del archivo CSV
+        for pais in paises:
+            # Obtiene el continente de la fila, lo convierte a minúsculas y elimina tildes
+            continente_registrado = limpieza_tildes(pais['Continente'].lower())
+            # Compara el continente ingresado con el continente de la fila actual
+            if (continente.lower() == continente_registrado):
+                # Imprime el nombre del país en minúsculas si coincide el continente
+                print(pais['NombreDelPais'].lower())
+                # Marca que se encontró al menos un país del continente ingresado
+                existencia = True
+            # Si es la última fila y no se encontró ningún país del continente
+            elif(len(paises) == i and existencia == False):
+                # Informa al usuario que el continente no existe en la base de datos
+                print("El continente ingresado no se encuentra registrado en la base de datos.")
+            # Incrementa el contador de iteraciones
+            i += 1
     # Captura errores de tipo de dato no válido
     except ValueError as e:
         print("ERROR: Tipo de dato no valido")
@@ -304,31 +301,43 @@ def filtrar_continente():
     except:
         print("Error identificado verificar el codigo desarrollado en la funcionalidad")
 
-def filtrar_poblacion():
+def filtrar_poblacion(paises):
     # Maneja errores de tipo de dato no válido y otros errores inesperados
     try:
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Define una función interna para obtener la población máxima del archivo
-            def obtener_max(archivo):
-                # Inicializa el máximo en cero
-                maximo = 0
-                # Recorre cada fila del archivo
-                for dato in archivo:
-                    # Si la población del dato actual supera el máximo registrado, lo actualiza
-                    if (maximo < int(dato['Poblacion'])):
-                        maximo = int(dato['Poblacion'])
-                # Devuelve el valor máximo de población encontrado
-                return maximo
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            archivo = list(csv.DictReader(archivo))
-            # Obtiene la población máxima registrada en el archivo
-            rango_maximo = obtener_max(archivo)
-            # Solicita al usuario que establezca un rango de población
-            print("Establece un rango para filtrar paises por su población")
-            # Solicita el valor mínimo del rango
-            print("Ingresa el minimo del rango: ")
-            # Lee la entrada del usuario y elimina espacios al inicio y al final
+        # Define una función interna para obtener la población máxima del archivo
+        def obtener_max(paises):
+            # Inicializa el máximo en cero
+            maximo = 0
+            # Recorre cada fila del archivo
+            for pais in paises:
+                # Si la población del dato actual supera el máximo registrado, lo actualiza
+                if (maximo < int(pais['Poblacion'])):
+                    maximo = int(pais['Poblacion'])
+            # Devuelve el valor máximo de población encontrado
+            return maximo
+        # Obtiene la población máxima registrada en el archivo
+        rango_maximo = obtener_max(paises)
+        # Solicita al usuario que establezca un rango de población
+        print("Establece un rango para filtrar paises por su población")
+        # Solicita el valor mínimo del rango
+        print("Ingresa el minimo del rango: ")
+        # Lee la entrada del usuario y elimina espacios al inicio y al final
+        min = input().strip()
+        # Repite mientras el valor ingresado no sea un número positivo
+        while not min.isdigit():
+            # Informa al usuario que solo puede ingresar números positivos o cero
+            print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
+            # Lee nuevamente la entrada del usuario
+            min = input().strip()
+        # Convierte el mínimo a entero
+        min = int(min)
+        # Repite mientras el mínimo sea mayor o igual al máximo de población registrada
+        while min >= rango_maximo:
+            # Informa al usuario que el mínimo no puede superar o igualar el máximo registrado
+            print("ERROR: El minimo ingresado no puede superar o igualar el maximo de población registrada")
+            # Solicita al usuario que ingrese un número más bajo
+            print("Ingresa un número mas bajo")
+            # Lee nuevamente la entrada del usuario
             min = input().strip()
             # Repite mientras el valor ingresado no sea un número positivo
             while not min.isdigit():
@@ -338,25 +347,23 @@ def filtrar_poblacion():
                 min = input().strip()
             # Convierte el mínimo a entero
             min = int(min)
-            # Repite mientras el mínimo sea mayor o igual al máximo de población registrada
-            while min >= rango_maximo:
-                # Informa al usuario que el mínimo no puede superar o igualar el máximo registrado
-                print("ERROR: El minimo ingresado no puede superar o igualar el maximo de población registrada")
-                # Solicita al usuario que ingrese un número más bajo
-                print("Ingresa un número mas bajo")
-                # Lee nuevamente la entrada del usuario
-                min = input().strip()
-                # Repite mientras el valor ingresado no sea un número positivo
-                while not min.isdigit():
-                    # Informa al usuario que solo puede ingresar números positivos o cero
-                    print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
-                    # Lee nuevamente la entrada del usuario
-                    min = input().strip()
-                # Convierte el mínimo a entero
-                min = int(min)
-            # Solicita el valor máximo del rango
-            print("Ingresa el maximo del rango")
-            # Lee la entrada del usuario y elimina espacios al inicio y al final
+        # Solicita el valor máximo del rango
+        print("Ingresa el maximo del rango")
+        # Lee la entrada del usuario y elimina espacios al inicio y al final
+        max = input().strip()
+        # Repite mientras el valor ingresado no sea un número positivo
+        while not max.isdigit():
+            # Informa al usuario que solo puede ingresar números positivos o cero
+            print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
+            # Lee nuevamente la entrada del usuario
+            max = input().strip()
+        # Convierte el máximo a entero
+        max = int(max)
+        # Repite mientras el máximo sea igual, menor al mínimo, o mayor al máximo registrado
+        while max == min or max < min or max > rango_maximo:
+            # Informa al usuario que el máximo debe ser mayor y distinto al mínimo
+            print("ERROR: El maximo debe ser mayor al minimo y distinto al minimo")
+            # Lee nuevamente la entrada del usuario
             max = input().strip()
             # Repite mientras el valor ingresado no sea un número positivo
             while not max.isdigit():
@@ -366,40 +373,26 @@ def filtrar_poblacion():
                 max = input().strip()
             # Convierte el máximo a entero
             max = int(max)
-            # Repite mientras el máximo sea igual, menor al mínimo, o mayor al máximo registrado
-            while max == min or max < min or max > rango_maximo:
-                # Informa al usuario que el máximo debe ser mayor y distinto al mínimo
-                print("ERROR: El maximo debe ser mayor al minimo y distinto al minimo")
-                # Lee nuevamente la entrada del usuario
-                max = input().strip()
-                # Repite mientras el valor ingresado no sea un número positivo
-                while not max.isdigit():
-                    # Informa al usuario que solo puede ingresar números positivos o cero
-                    print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
-                    # Lee nuevamente la entrada del usuario
-                    max = input().strip()
-                # Convierte el máximo a entero
-                max = int(max)
-            # Muestra el encabezado con el rango ingresado
-            print(f"PAISES SEGUN POBLACION | MIN: {min} - MAX: {max}")
-            # Contador para saber en qué iteración del loop estamos
-            i = 1
-            # Bandera para saber si se encontró algún país dentro del rango
-            filtro = False
-            # Recorre cada fila del archivo CSV
-            for dato in archivo:
-                # Verifica si la población del país está dentro del rango ingresado
-                if(int(dato['Poblacion']) >= min and int(dato['Poblacion']) <= max):
-                    # Marca que se encontró al menos un país dentro del rango
-                    filtro = True
-                    # Muestra el nombre del país y su población
-                    print(f"{dato['NombreDelPais']} | POBLACION: {int(dato['Poblacion'])} PERSONAS")
-                # Si es la última fila y no se encontró ningún país dentro del rango
-                if (i == len(archivo) and filtro == False):
-                    # Informa al usuario que no hay países dentro del rango ingresado
-                    print("No se encuentran paises dentro del rango ingresado")
-                # Incrementa el contador de iteraciones
-                i += 1
+        # Muestra el encabezado con el rango ingresado
+        print(f"PAISES SEGUN POBLACION | MIN: {min} - MAX: {max}")
+        # Contador para saber en qué iteración del loop estamos
+        i = 1
+        # Bandera para saber si se encontró algún país dentro del rango
+        filtro = False
+        # Recorre cada fila del archivo CSV
+        for pais in paises:
+            # Verifica si la población del país está dentro del rango ingresado
+            if(int(pais['Poblacion']) >= min and int(pais['Poblacion']) <= max):
+                # Marca que se encontró al menos un país dentro del rango
+                filtro = True
+                # Muestra el nombre del país y su población
+                print(f"{pais['NombreDelPais']} | POBLACION: {int(pais['Poblacion'])} PERSONAS")
+            # Si es la última fila y no se encontró ningún país dentro del rango
+            if (i == len(paises) and filtro == False):
+                # Informa al usuario que no hay países dentro del rango ingresado
+                print("No se encuentran paises dentro del rango ingresado")
+            # Incrementa el contador de iteraciones
+            i += 1
     # Captura errores de tipo de dato no válido
     except ValueError as e:
         print("ERROR: Tipo de dato no valido")
@@ -407,26 +400,38 @@ def filtrar_poblacion():
     except:
         print("Error identificado verificar el codigo desarrollado en la funcionalidad")
 
-def filtrar_superficie():
+def filtrar_superficie(paises):
     # Maneja cualquier error inesperado
     try:
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            filas = list(csv.DictReader(archivo))
-            # Obtiene el diccionario completo de la fila con la mayor superficie
-            rango_maximo = max(filas, key=lambda x: int(x['Superficie']))
-            # Guarda el diccionario de la fila con mayor superficie para mostrar datos luego
-            fila_maxima = rango_maximo
-            # Extrae únicamente el valor numérico de la superficie máxima
-            rango_maximo = int(rango_maximo['Superficie'])
-            # Muestra la superficie máxima registrada
-            print(rango_maximo)
-            # Solicita al usuario que establezca un rango de superficie
-            print("Establece un rango para filtrar paises según superficie")
-            # Solicita el valor mínimo del rango
-            print("Ingresa el minimo del rango: ")
-            # Lee la entrada del usuario y elimina espacios al inicio y al final
+        # Obtiene el diccionario completo de la fila con la mayor superficie
+        rango_maximo = max(paises, key=lambda x: int(x['Superficie']))
+        # Guarda el diccionario de la fila con mayor superficie para mostrar datos luego
+        fila_maxima = rango_maximo
+        # Extrae únicamente el valor numérico de la superficie máxima
+        rango_maximo = int(rango_maximo['Superficie'])
+        # Muestra la superficie máxima registrada
+        print(rango_maximo)
+        # Solicita al usuario que establezca un rango de superficie
+        print("Establece un rango para filtrar paises según superficie")
+        # Solicita el valor mínimo del rango
+        print("Ingresa el minimo del rango: ")
+        # Lee la entrada del usuario y elimina espacios al inicio y al final
+        minimo = input().strip()
+        # Repite mientras el valor ingresado no sea un número positivo
+        while not minimo.isdigit():
+            # Informa al usuario que solo puede ingresar números positivos o cero
+            print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
+            # Lee nuevamente la entrada del usuario
+            minimo = input().strip()
+        # Convierte el mínimo a entero
+        minimo = int(minimo)
+        # Repite mientras el mínimo sea mayor o igual a la superficie máxima registrada
+        while minimo >= rango_maximo:
+            # Informa al usuario cuál es el país con mayor superficie registrada
+            print(f"El pais con mayor superficie registrada es de {fila_maxima['NombreDelPais']} - {fila_maxima['Superficie']} km")
+            # Solicita al usuario que ingrese un valor más bajo
+            print("Vuelve a ingresar un valor")
+            # Lee nuevamente la entrada del usuario
             minimo = input().strip()
             # Repite mientras el valor ingresado no sea un número positivo
             while not minimo.isdigit():
@@ -436,25 +441,23 @@ def filtrar_superficie():
                 minimo = input().strip()
             # Convierte el mínimo a entero
             minimo = int(minimo)
-            # Repite mientras el mínimo sea mayor o igual a la superficie máxima registrada
-            while minimo >= rango_maximo:
-                # Informa al usuario cuál es el país con mayor superficie registrada
-                print(f"El pais con mayor superficie registrada es de {fila_maxima['NombreDelPais']} - {fila_maxima['Superficie']} km")
-                # Solicita al usuario que ingrese un valor más bajo
-                print("Vuelve a ingresar un valor")
-                # Lee nuevamente la entrada del usuario
-                minimo = input().strip()
-                # Repite mientras el valor ingresado no sea un número positivo
-                while not minimo.isdigit():
-                    # Informa al usuario que solo puede ingresar números positivos o cero
-                    print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
-                    # Lee nuevamente la entrada del usuario
-                    minimo = input().strip()
-                # Convierte el mínimo a entero
-                minimo = int(minimo)
-            # Solicita el valor máximo del rango
-            print("Ingresa el maximo del rango: ")
-            # Lee la entrada del usuario y elimina espacios al inicio y al final
+        # Solicita el valor máximo del rango
+        print("Ingresa el maximo del rango: ")
+        # Lee la entrada del usuario y elimina espacios al inicio y al final
+        maximo = input().strip()
+        # Repite mientras el valor ingresado no sea un número positivo
+        while not maximo.isdigit():
+            # Informa al usuario que solo puede ingresar números positivos o cero
+            print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
+            # Lee nuevamente la entrada del usuario
+            maximo = input().strip()
+        # Convierte el máximo a entero
+        maximo = int(maximo)
+        # Repite mientras el máximo sea igual o menor al mínimo
+        while maximo == minimo or maximo < minimo:
+            # Informa al usuario que el máximo debe ser mayor y distinto al mínimo
+            print("ERROR: El maximo debe ser mayor al minimo y distinto al minimo ingresado")
+            # Lee nuevamente la entrada del usuario
             maximo = input().strip()
             # Repite mientras el valor ingresado no sea un número positivo
             while not maximo.isdigit():
@@ -464,78 +467,60 @@ def filtrar_superficie():
                 maximo = input().strip()
             # Convierte el máximo a entero
             maximo = int(maximo)
-            # Repite mientras el máximo sea igual o menor al mínimo
-            while maximo == minimo or maximo < minimo:
-                # Informa al usuario que el máximo debe ser mayor y distinto al mínimo
-                print("ERROR: El maximo debe ser mayor al minimo y distinto al minimo ingresado")
-                # Lee nuevamente la entrada del usuario
-                maximo = input().strip()
-                # Repite mientras el valor ingresado no sea un número positivo
-                while not maximo.isdigit():
-                    # Informa al usuario que solo puede ingresar números positivos o cero
-                    print("ERROR: Solo puedes ingresar numeros positivos o iguales a cero")
-                    # Lee nuevamente la entrada del usuario
-                    maximo = input().strip()
-                # Convierte el máximo a entero
-                maximo = int(maximo)
-            # Muestra el encabezado con el rango ingresado
-            print(f"PAISES SEGUN SUPERFICIE | MIN: {minimo} - MAX: {maximo} KM")
-            # Ordena los países de mayor a menor superficie
-            paises_ordenados = sorted(filas, key=lambda x: int(x['Superficie']), reverse=True)
-            # Contador para numerar los países en la salida
-            i = 1
-            # Bandera para saber si se encontró algún país dentro del rango
-            filtro = False
-            # Recorre cada país ordenado por superficie
-            for pais in paises_ordenados:
-                # Verifica si la superficie del país está dentro del rango ingresado
-                if(int(pais['Superficie']) >= minimo and int(pais['Superficie']) <= maximo):
-                    # Marca que se encontró al menos un país dentro del rango
-                    filtro = True
-                    # Muestra el número, nombre y superficie del país
-                    print(f"PAIS N°{i}: {pais['NombreDelPais']} | SUPERFICIE: {int(pais['Superficie'])} KM")
-                # Si es la última fila y no se encontró ningún país dentro del rango
-                if (i == len(paises_ordenados) and filtro == False):
-                    # Informa al usuario que no hay países dentro del rango ingresado
-                    print("No se encuentran paises dentro del rango ingresado")
-                # Incrementa el contador de iteraciones
-                i += 1
+        # Muestra el encabezado con el rango ingresado
+        print(f"PAISES SEGUN SUPERFICIE | MIN: {minimo} - MAX: {maximo} KM")
+        # Ordena los países de mayor a menor superficie
+        paises_ordenados = sorted(paises, key=lambda x: int(x['Superficie']), reverse=True)
+        # Contador para numerar los países en la salida
+        i = 1
+        # Bandera para saber si se encontró algún país dentro del rango
+        filtro = False
+        # Recorre cada país ordenado por superficie
+        for pais in paises_ordenados:
+            # Verifica si la superficie del país está dentro del rango ingresado
+            if(int(pais['Superficie']) >= minimo and int(pais['Superficie']) <= maximo):
+                # Marca que se encontró al menos un país dentro del rango
+                filtro = True
+                # Muestra el número, nombre y superficie del país
+                print(f"PAIS N°{i}: {pais['NombreDelPais']} | SUPERFICIE: {int(pais['Superficie'])} KM")
+            # Si es la última fila y no se encontró ningún país dentro del rango
+            if (i == len(paises_ordenados) and filtro == False):
+                # Informa al usuario que no hay países dentro del rango ingresado
+                print("No se encuentran paises dentro del rango ingresado")
+            # Incrementa el contador de iteraciones
+            i += 1
     # Captura cualquier error inesperado
     except:
         print("Error encontrado verifica el desarrollo del codigo")
 
-def ordenar_nombre():
+def ordenar_nombre(paises):
     # Maneja cualquier error inesperado
     try:
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            archivo = list(csv.DictReader(archivo))
-            # Inicializa la lista donde se almacenarán los nombres de los países
-            nombres = []
-            # Recorre cada elemento del archivo
-            for elemento in archivo:
-                # Muestra el nombre original del país
-                print(elemento['NombreDelPais'])
-                # Elimina las tildes del nombre para poder ordenarlo correctamente
-                nombre = validacion_tildes(elemento['NombreDelPais'])
-                # Muestra el nombre sin tildes
-                print(nombre)
-                # Agrega el nombre sin tildes a la lista
-                nombres.append(nombre)
-            # Ordena la lista de nombres alfabéticamente
-            nombres = sorted(nombres)
-            # Muestra el encabezado de la lista ordenada
-            print("NOMBRES DE PAISES ORDENADOS ALFABETICAMENTE: ")
-            # Recorre cada nombre ordenado
-            for nombre in nombres:
-                # Muestra el nombre del país
-                print(f"PAIS: {nombre}")
+        # Inicializa la lista donde se almacenarán los nombres de los países
+        nombres = []
+        # Recorre cada elemento de paises
+        for elemento in paises:
+            # Muestra el nombre original del país
+            print(elemento['NombreDelPais'])
+            # Elimina las tildes del nombre para poder ordenarlo correctamente
+            nombre = limpieza_tildes(elemento['NombreDelPais'])
+            # Muestra el nombre sin tildes
+            print(nombre)
+            # Agrega el nombre sin tildes a la lista
+            nombres.append(nombre)
+        # Ordena la lista de nombres alfabéticamente
+        nombres = sorted(nombres)
+        # Muestra el encabezado de la lista ordenada
+        print("NOMBRES DE PAISES ORDENADOS ALFABETICAMENTE: ")
+        # Recorre cada nombre ordenado
+        for nombre in nombres:
+            # Muestra el nombre del país
+            print(f"PAIS: {nombre}")
     # Captura cualquier error inesperado
     except:
         print("Error identificado verificar el codigo desarrollado en la funcionalidad")
 
-def ordenar_superficie():
+def ordenar_superficie(paises):
     # Maneja cualquier error inesperado
     try:
         # Solicita al usuario el criterio de ordenamiento
@@ -552,124 +537,112 @@ def ordenar_superficie():
             print("Solo debes ingresar 'A' o 'B' como eleccion")
             # Lee nuevamente la entrada del usuario
             eleccion = input().strip().lower()
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            filas = list(csv.DictReader(archivo))
-            # Si el usuario eligió ordenar de menor a mayor
-            if (eleccion == 'a'):
-                # Ordena las filas por superficie de menor a mayor
-                filas_ordenadas = sorted(filas, key=lambda x: int(x['Superficie']))
-            # Si el usuario eligió ordenar de mayor a menor
-            elif (eleccion == 'b'):
-                # Ordena las filas por superficie de mayor a menor
-                filas_ordenadas = sorted(filas, key=lambda x: int(x['Superficie']), reverse=True)
-            # Recorre cada fila ordenada
-            for fila in filas_ordenadas:
-                # Muestra el nombre del país y su superficie
-                print(f"PAIS: {fila['NombreDelPais']} | SUPERFICIE: {fila['Superficie']} km")
+        # Si el usuario eligió ordenar de menor a mayor
+        if (eleccion == 'a'):
+            # Ordena las filas por superficie de menor a mayor
+            filas_ordenadas = sorted(paises, key=lambda x: int(x['Superficie']))
+        # Si el usuario eligió ordenar de mayor a menor
+        elif (eleccion == 'b'):
+            # Ordena las filas por superficie de mayor a menor
+            filas_ordenadas = sorted(paises, key=lambda x: int(x['Superficie']), reverse=True)
+        # Recorre cada fila ordenada
+        for fila in filas_ordenadas:
+            # Muestra el nombre del país y su superficie
+            print(f"PAIS: {fila['NombreDelPais']} | SUPERFICIE: {fila['Superficie']} km")
     # Captura cualquier error inesperado
     except:
         print("Error identificado verificar el codigo desarrollado en la funcionalidad")
 
-def ordenar_poblacion():
+def ordenar_poblacion(paises):
     # Maneja cualquier error inesperado
     try:
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            filas = list(csv.DictReader(archivo))
-            # Ordena las filas por población de menor a mayor
-            filas_ordenadas = sorted(filas, key=lambda x: int(x['Poblacion']))
-            # Recorre cada fila ordenada
-            for fila in filas_ordenadas:
-                # Muestra el nombre del país y su población
-                print(f"PAIS: {fila['NombreDelPais']} | POBLACIÓN: {fila['Poblacion']} personas")
+        # Ordena las filas por población de menor a mayor
+        filas_ordenadas = sorted(paises, key=lambda x: int(x['Poblacion']))
+        # Recorre cada fila ordenada
+        for fila in filas_ordenadas:
+            # Muestra el nombre del país y su población
+            print(f"PAIS: {fila['NombreDelPais']} | POBLACIÓN: {fila['Poblacion']} personas")
     # Captura cualquier error inesperado
     except:
         print("Error identificado verifica el codigo desarrollado")
 
-def estadisticas():
+def estadisticas(paises):
     # Maneja cualquier error inesperado
     try:
-        # Abre el archivo CSV en modo lectura con codificación UTF-8
-        with open(file_csv, 'r', encoding='utf-8') as archivo:
-            # Define una función interna para sumar la población total de todos los países
-            def promedio_poblacion(lista):
-                # Inicializa el acumulador en cero
-                promedio = 0
+        # Define una función interna para sumar la población total de todos los países
+        def promedio_poblacion(lista):
+            # Inicializa el acumulador en cero
+            promedio = 0
+            # Recorre cada dato de la lista
+            for dato in lista:
+                # Suma la población de cada país al acumulador
+                promedio = promedio + int(dato['Poblacion'])
+            # Devuelve la suma total de la población
+            return promedio
+        # Define una función interna para sumar la superficie total de todos los países
+        def promedio_superficie(lista):
+            # Inicializa el acumulador en cero
+            promedio = 0
+            # Recorre cada dato de la lista
+            for dato in lista:
+                # Suma la superficie de cada país al acumulador
+                promedio = promedio + int(dato['Superficie'])
+            # Devuelve la suma total de la superficie
+            return promedio
+        # Define una función interna para obtener una lista de continentes sin repetidos
+        def registro_continentes(lista):
+            # Inicializa la lista de continentes vacía
+            continentes = []
+            # Recorre cada dato de la lista
+            for dato in lista:
+                # Si el continente del dato no está en la lista, lo agrega
+                if (dato['Continente'] not in continentes):
+                    continentes.append(dato['Continente'])
+            # Devuelve la lista de continentes únicos
+            return continentes
+        # Define una función interna para contar cuántos países hay por continente
+        def contar_paises(lista, continentes):
+            # Recorre cada continente registrado
+            for continente in continentes:
+                # Inicializa el contador de países para este continente
+                i = 0
                 # Recorre cada dato de la lista
                 for dato in lista:
-                    # Suma la población de cada país al acumulador
-                    promedio = promedio + int(dato['Poblacion'])
-                # Devuelve la suma total de la población
-                return promedio
-            # Define una función interna para sumar la superficie total de todos los países
-            def promedio_superficie(lista):
-                # Inicializa el acumulador en cero
-                promedio = 0
-                # Recorre cada dato de la lista
-                for dato in lista:
-                    # Suma la superficie de cada país al acumulador
-                    promedio = promedio + int(dato['Superficie'])
-                # Devuelve la suma total de la superficie
-                return promedio
-            # Define una función interna para obtener una lista de continentes sin repetidos
-            def registro_continentes(lista):
-                # Inicializa la lista de continentes vacía
-                continentes = []
-                # Recorre cada dato de la lista
-                for dato in lista:
-                    # Si el continente del dato no está en la lista, lo agrega
-                    if (dato['Continente'] not in continentes):
-                        continentes.append(dato['Continente'])
-                # Devuelve la lista de continentes únicos
-                return continentes
-            # Define una función interna para contar cuántos países hay por continente
-            def contar_paises(lista, continentes):
-                # Recorre cada continente registrado
-                for continente in continentes:
-                    # Inicializa el contador de países para este continente
-                    i = 0
-                    # Recorre cada dato de la lista
-                    for dato in lista:
-                        # Si el país pertenece al continente actual, incrementa el contador
-                        if (continente == dato['Continente']):
-                            i += 1
-                    # Muestra el nombre del continente y la cantidad de países
-                    print(f"{continente.upper()} - {i} paises")
-            # Lee todas las filas del CSV y las convierte en una lista de diccionarios
-            filas = list(csv.DictReader(archivo))
-            # Obtiene el diccionario completo del país con mayor población
-            fila_maxima = max(filas, key=lambda x: int(x['Poblacion']))
-            # Muestra separador visual
-            print("------------------------------------------------------------------------------------------------------------")
-            # Muestra el país con mayor población y su valor
-            print(f"PAIS CON MAYOR POBLACION: {fila_maxima['NombreDelPais']} | {fila_maxima['Poblacion']} personas")
-            # Obtiene el diccionario completo del país con menor población
-            fila_minima = min(filas, key=lambda x: int(x['Poblacion']))
-            # Muestra el país con menor población y su valor
-            print(f"PAIS CON MENOR POBLACION: {fila_minima['NombreDelPais']} | {fila_minima['Poblacion']} personas")
-            # Muestra separador visual
-            print("------------------------------------------------------------------------------------------------------------")
-            # Calcula la suma total de la población de todos los países
-            p_promedio = promedio_poblacion(filas)
-            # Muestra la suma total de población
-            print(f"El promedio de la población entre los paises registrados es de: {p_promedio} personas")
-            # Muestra separador visual
-            print("------------------------------------------------------------------------------------------------------------")
-            # Calcula la suma total de la superficie de todos los países
-            s_promedio = promedio_superficie(filas)
-            # Muestra la suma total de superficie
-            print(f"El promedio de superficie de los paises registrados es de: {s_promedio} personas")
-            # Muestra separador visual
-            print("------------------------------------------------------------------------------------------------------------")
-            # Muestra el encabezado de la sección de países por continente
-            print("CANTIDAD DE PAISES POR CONTINENTE:")
-            # Obtiene la lista de continentes únicos registrados
-            continentes = registro_continentes(filas)
-            # Muestra la cantidad de países por cada continente
-            contar_paises(filas, continentes)
+                    # Si el país pertenece al continente actual, incrementa el contador
+                    if (continente == dato['Continente']):
+                        i += 1
+                # Muestra el nombre del continente y la cantidad de países
+                print(f"{continente.upper()} - {i} paises")
+        # Obtiene el diccionario completo del país con mayor población
+        fila_maxima = max(paises, key=lambda x: int(x['Poblacion']))
+        # Muestra separador visual
+        print("------------------------------------------------------------------------------------------------------------")
+        # Muestra el país con mayor población y su valor
+        print(f"PAIS CON MAYOR POBLACION: {fila_maxima['NombreDelPais']} | {fila_maxima['Poblacion']} personas")
+        # Obtiene el diccionario completo del país con menor población
+        fila_minima = min(paises, key=lambda x: int(x['Poblacion']))
+        # Muestra el país con menor población y su valor
+        print(f"PAIS CON MENOR POBLACION: {fila_minima['NombreDelPais']} | {fila_minima['Poblacion']} personas")
+        # Muestra separador visual
+        print("------------------------------------------------------------------------------------------------------------")
+        # Calcula la suma total de la población de todos los países
+        p_promedio = promedio_poblacion(paises)
+        # Muestra la suma total de población
+        print(f"El promedio de la población entre los paises registrados es de: {p_promedio} personas")
+        # Muestra separador visual
+        print("------------------------------------------------------------------------------------------------------------")
+        # Calcula la suma total de la superficie de todos los países
+        s_promedio = promedio_superficie(paises)
+        # Muestra la suma total de superficie
+        print(f"El promedio de superficie de los paises registrados es de: {s_promedio} personas")
+        # Muestra separador visual
+        print("------------------------------------------------------------------------------------------------------------")
+        # Muestra el encabezado de la sección de países por continente
+        print("CANTIDAD DE PAISES POR CONTINENTE:")
+        # Obtiene la lista de continentes únicos registrados
+        continentes = registro_continentes(paises)
+        # Muestra la cantidad de países por cada continente
+        contar_paises(paises, continentes)
     # Captura cualquier error inesperado
     except:
         print("Se presento un error, verifica el desarrollo del código")
@@ -756,7 +729,6 @@ def limpieza_tildes(texto):
                 
 
 #Principal
-paises = cargar_csv("paises.csv")
+paises = cargar_csv(file_csv)
 
 mostrar_menu(paises)
-
